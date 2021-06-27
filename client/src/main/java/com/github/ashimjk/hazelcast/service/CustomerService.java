@@ -2,6 +2,7 @@ package com.github.ashimjk.hazelcast.service;
 
 import com.github.ashimjk.hazelcast.domain.Customer;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.EntryProcessor;
 import com.hazelcast.map.IMap;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.Predicates;
@@ -14,6 +15,8 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -44,8 +47,29 @@ public class CustomerService implements MapNames {
         customerById.putAll(customersLocalMap);
     }
 
-    public void updateCustomer(Customer customer) {
-        customerById.put(customer.getId(), customer);
+    public boolean updateCustomer(Long customerId, Function<Customer, Customer> function) {
+        try {
+            boolean lockObtained = customerById.tryLock(customerId, 2, TimeUnit.SECONDS);
+            try {
+                if (!lockObtained) {
+                    return false;
+                }
+
+                Customer customer = getCustomer(customerId);
+                Customer newValue = function.apply(customer);
+                customerById.put(customerId, newValue);
+
+            } finally {
+                customerById.unlock(customerId);
+            }
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
+        return true;
+    }
+
+    public Boolean updateCustomerWithEntryProcessor(Long customerId, EntryProcessor<Long, Customer, Boolean> entryProcessor) {
+        return customerById.executeOnKey(customerId, entryProcessor);
     }
 
     public void deleteCustomer(Customer customer) {

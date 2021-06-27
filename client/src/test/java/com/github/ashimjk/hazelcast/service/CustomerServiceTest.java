@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,8 +17,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DirtiesContext
 @SpringBootTest(properties = {"spring.main.allow-bean-definition-overriding=true"},
         classes = {ClientApplication.class, ClientTestConfiguration.class})
 class CustomerServiceTest {
@@ -58,6 +57,37 @@ class CustomerServiceTest {
         assertEquals(customer1, customersMap.get(1L));
         assertEquals(customer2, customersMap.get(2L));
         assertEquals(customer3, customersMap.get(3L));
+    }
+
+    @Test
+    public void testUpdateCustomer() {
+        customerService.addCustomers(generateCustomers(2));
+
+        assertEquals("Customer 1", customerService.getCustomer(1L).getName());
+
+        boolean result
+                = customerService.updateCustomer(1L,
+                                                 customer -> {
+                                                     customer.setName("Ashim Khadka");
+                                                     return customer;
+                                                 });
+
+        assertTrue(result);
+        assertEquals("Ashim Khadka", customerService.getCustomer(1L).getName());
+    }
+
+    @Test
+    public void testUpdateCustomerWithEntryProcessor() {
+        customerService.addCustomers(generateCustomers(2));
+
+        assertEquals("Customer 1", customerService.getCustomer(1L).getName());
+
+        LocalDate newDOB = LocalDate.now().plusYears(2);
+        UpdateCustomerDOBEP entryProcessor = new UpdateCustomerDOBEP(newDOB);
+        boolean result = customerService.updateCustomerWithEntryProcessor(1L, entryProcessor);
+
+        assertTrue(result);
+        assertEquals(newDOB, customerService.getCustomer(1L).getDob());
     }
 
     @Test
