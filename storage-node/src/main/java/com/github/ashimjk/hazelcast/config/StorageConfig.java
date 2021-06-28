@@ -1,5 +1,6 @@
 package com.github.ashimjk.hazelcast.config;
 
+import com.github.ashimjk.hazelcast.listener.ConfigEntryListener;
 import com.github.ashimjk.hazelcast.service.CustomerMapStore;
 import com.github.ashimjk.hazelcast.service.EmailQueueStore;
 import com.github.ashimjk.hazelcast.shared.StoreNames;
@@ -45,6 +46,13 @@ public class StorageConfig {
 
         IndexConfig dobIndexConfig = new IndexConfig(IndexConfig.DEFAULT_TYPE, "dob");
         customerMapConfig.addIndexConfig(dobIndexConfig);
+
+        // Add global entry listener
+        EntryListenerConfig entryListenerConfig = new EntryListenerConfig();
+        entryListenerConfig.setImplementation(new ConfigEntryListener());
+        entryListenerConfig.setLocal(true);
+
+        customerMapConfig.addEntryListenerConfig(entryListenerConfig);
 
         // Add the customers map config to our storage node config
         config.addMapConfig(customerMapConfig);
