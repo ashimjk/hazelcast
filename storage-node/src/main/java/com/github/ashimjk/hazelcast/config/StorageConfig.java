@@ -2,6 +2,7 @@ package com.github.ashimjk.hazelcast.config;
 
 import com.github.ashimjk.hazelcast.listener.AlertPartitionLostListener;
 import com.github.ashimjk.hazelcast.listener.ConfigEntryListener;
+import com.github.ashimjk.hazelcast.serializations.PersonPortableFactory;
 import com.github.ashimjk.hazelcast.service.CustomerMapStore;
 import com.github.ashimjk.hazelcast.service.EmailQueueStore;
 import com.github.ashimjk.hazelcast.shared.StoreNames;
@@ -18,6 +19,10 @@ public class StorageConfig {
                                     AlertPartitionLostListener partitionLostListener) {
         Config config = new Config();
         config.setInstanceName("storage-node");
+
+        // Person Portable Factory for Serialization
+        SerializationConfig serializationConfig = config.getSerializationConfig();
+        serializationConfig.addPortableFactory(PersonPortableFactory.FACTORY_ID, new PersonPortableFactory());
 
         // Listen Partition Lost
         ListenerConfig listenerConfig = new ListenerConfig();
