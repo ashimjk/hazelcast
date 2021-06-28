@@ -1,10 +1,8 @@
 package com.github.ashimjk.hazelcast.config;
 
 import com.github.ashimjk.hazelcast.service.CustomerMapStore;
-import com.hazelcast.config.Config;
-import com.hazelcast.config.IndexConfig;
-import com.hazelcast.config.MapConfig;
-import com.hazelcast.config.MapStoreConfig;
+import com.github.ashimjk.hazelcast.service.EmailQueueStore;
+import com.hazelcast.config.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,9 +10,23 @@ import org.springframework.context.annotation.Configuration;
 public class StorageConfig {
 
     @Bean
-    public Config storageNodeConfig(CustomerMapStore customerMapStore) {
+    public Config storageNodeConfig(CustomerMapStore customerMapStore, EmailQueueStore emailQueueStore) {
         Config config = new Config();
         config.setInstanceName("storage-node");
+
+        // Account Customer Multi Map
+        MultiMapConfig multiMapConfig = new MultiMapConfig("account-to-customers");
+        multiMapConfig.setValueCollectionType(MultiMapConfig.ValueCollectionType.LIST);
+        config.addMultiMapConfig(multiMapConfig);
+
+        // Email Queue Configuration
+        QueueConfig emailQueueConfig = new QueueConfig();
+        emailQueueConfig.setName("email-queue");
+        QueueStoreConfig emailQueueStoreConfig = new QueueStoreConfig();
+        emailQueueStoreConfig.setStoreImplementation(emailQueueStore);
+
+        emailQueueConfig.setQueueStoreConfig(emailQueueStoreConfig);
+        config.addQueueConfig(emailQueueConfig);
 
         // Create a new map configuration for the customers map
         MapConfig customerMapConfig = new MapConfig();
