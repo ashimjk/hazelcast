@@ -1,5 +1,6 @@
 package com.github.ashimjk.hazelcast.config;
 
+import com.github.ashimjk.hazelcast.listener.AlertPartitionLostListener;
 import com.github.ashimjk.hazelcast.listener.ConfigEntryListener;
 import com.github.ashimjk.hazelcast.service.CustomerMapStore;
 import com.github.ashimjk.hazelcast.service.EmailQueueStore;
@@ -12,9 +13,16 @@ import org.springframework.context.annotation.Configuration;
 public class StorageConfig {
 
     @Bean
-    public Config storageNodeConfig(CustomerMapStore customerMapStore, EmailQueueStore emailQueueStore) {
+    public Config storageNodeConfig(CustomerMapStore customerMapStore,
+                                    EmailQueueStore emailQueueStore,
+                                    AlertPartitionLostListener partitionLostListener) {
         Config config = new Config();
         config.setInstanceName("storage-node");
+
+        // Listen Partition Lost
+        ListenerConfig listenerConfig = new ListenerConfig();
+        listenerConfig.setImplementation(partitionLostListener);
+        config.addListenerConfig(listenerConfig);
 
         // Account Customer Multi Map
         MultiMapConfig multiMapConfig = new MultiMapConfig(StoreNames.ACCOUNT_TO_CUSTOMERS);
@@ -32,6 +40,12 @@ public class StorageConfig {
 
         // Create a new map configuration for the customers map
         MapConfig customerMapConfig = new MapConfig();
+
+        // Increase the number of synchronous backups of the data
+        // customerMapConfig.setBackupCount(3);
+
+        // Increase the number of asynchronous backups of the data
+        // customerMapConfig.setAsyncBackupCount(3);
 
         // Create a map store config for the customer information
         MapStoreConfig customerMapStoreConfig = new MapStoreConfig();

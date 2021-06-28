@@ -46,6 +46,7 @@ public class LockTest {
         Future<?> runnable2Future = executorService.submit(runnable2);
         Thread.sleep(5000);
         runnable1Future.cancel(true);
+
         Thread.sleep(5000);
         assertTrue(runnable2.ownsLock());
 

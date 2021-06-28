@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.UUID;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -24,11 +25,18 @@ public class CustomerEntryListener implements
         StoreNames {
 
     private final HazelcastInstance hazelcastInstance;
+    private UUID listenerId;
 
     @PostConstruct
     public void init() {
         IMap<Long, Customer> customerById = hazelcastInstance.getMap(StoreNames.CUSTOMERS_MAP);
-        customerById.addLocalEntryListener(this);
+        this.listenerId = customerById.addLocalEntryListener(this);
+    }
+
+    @PreDestroy
+    public void stop() {
+        IMap<Long, Customer> customerById = hazelcastInstance.getMap(StoreNames.CUSTOMERS_MAP);
+        customerById.removeEntryListener(listenerId);
     }
 
     public static void registerItSelf(HazelcastInstance hazelcastInstance) {

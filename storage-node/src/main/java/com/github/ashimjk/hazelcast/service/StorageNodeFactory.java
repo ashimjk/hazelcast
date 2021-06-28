@@ -1,6 +1,7 @@
 package com.github.ashimjk.hazelcast.service;
 
 import com.github.ashimjk.hazelcast.listener.CustomerEntryListener;
+import com.github.ashimjk.hazelcast.listener.TopicMessageListener;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -60,11 +61,16 @@ public class StorageNodeFactory {
         @Override
         public HazelcastInstance call() {
             HazelcastInstance instance = Hazelcast.newHazelcastInstance(storageNodeConfig);
+
             CustomerEntryListener.registerItSelf(instance);
+            TopicMessageListener.registerItSelf(instance);
+
             instances.add(instance);
+
             if (latch != null) {
                 latch.countDown();
             }
+
             return instance;
         }
 
