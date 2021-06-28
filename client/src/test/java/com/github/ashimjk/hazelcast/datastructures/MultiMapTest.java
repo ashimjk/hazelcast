@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(properties = {"spring.main.allow-bean-definition-overriding=true"},
@@ -19,9 +21,9 @@ public class MultiMapTest {
 
     @Test
     public void multiMapExample() {
-        Customer customer1 = new Customer(1L, "Grant Little", null, "grant@grantlittle.me");
-        Customer customer2 = new Customer(2L, "Simon", null, "simon@somecompany.com");
-        Customer customer3 = new Customer(3L, "Jane", null, "jane@somecompany.com");
+        Customer customer1 = new Customer(1L, "Ashim Khadka", LocalDate.now(), "ashim@gmail.com");
+        Customer customer2 = new Customer(2L, "Kushal Sherchan", LocalDate.now(), "kushal@gmail.com");
+        Customer customer3 = new Customer(3L, "Shekhar Rai", LocalDate.now(), "shekar@gmail.com");
 
         MultiMap<String, Customer> accountToCustomersMap = clientInstance.getMultiMap("account-to-customers");
         accountToCustomersMap.put("1", customer1);

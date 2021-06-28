@@ -38,8 +38,8 @@ public class TopicTest {
         });
 
         try {
-            newCustomerTopic.publish(new Customer(1L, "Grant", LocalDate.now(), "grant@grantlittle.me"));
-            newCustomerTopic.publish(new Customer(2L, "Simon", LocalDate.now(), "simon@somecompany.com"));
+            newCustomerTopic.publish(new Customer(1L, "Ashim Khadka", LocalDate.now(), "ashim@gmail.com"));
+            newCustomerTopic.publish(new Customer(2L, "Kushal Sherchan", LocalDate.now(), "kushal@gmail.com"));
 
             assertTrue(latch.await(1, TimeUnit.SECONDS));
 
