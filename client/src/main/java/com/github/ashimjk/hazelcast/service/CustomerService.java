@@ -1,6 +1,7 @@
 package com.github.ashimjk.hazelcast.service;
 
 import com.github.ashimjk.hazelcast.domain.Customer;
+import com.github.ashimjk.hazelcast.model.CustomerOverview;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.EntryProcessor;
 import com.hazelcast.map.IMap;
@@ -85,9 +86,14 @@ public class CustomerService implements MapNames {
         return customerById.values(andPredicate);
     }
 
+    @SuppressWarnings("unchecked")
     public Collection<Customer> findCustomersByEmail(String email) {
         SqlPredicate sqlPredicate = new SqlPredicate("email LIKE '" + email + "'");
         return customerById.values(sqlPredicate);
+    }
+
+    public CustomerOverview getCustomerOverview(Long customerId) {
+        return customerById.executeOnKey(customerId, new GetCustomerOverviewEntryProcessor());
     }
 
 }

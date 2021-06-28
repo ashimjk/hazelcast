@@ -3,6 +3,9 @@ package com.github.ashimjk.hazelcast.service;
 import com.github.ashimjk.hazelcast.ClientApplication;
 import com.github.ashimjk.hazelcast.config.ClientTestConfiguration;
 import com.github.ashimjk.hazelcast.domain.Customer;
+import com.github.ashimjk.hazelcast.model.Address;
+import com.github.ashimjk.hazelcast.model.AddressKey;
+import com.github.ashimjk.hazelcast.model.CustomerOverview;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,8 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(properties = {"spring.main.allow-bean-definition-overriding=true"},
         classes = {ClientApplication.class, ClientTestConfiguration.class})
@@ -136,6 +138,24 @@ class CustomerServiceTest {
 
         Collection<Customer> customers = customerService.findCustomersByEmail("%@gmail.com");
         assertEquals(10, customers.size());
+    }
+
+    @Test
+    public void testGetCustomerOverview() {
+        Long customerId = 1L;
+        Long addressId = 5L;
+        Customer customer = new Customer(customerId, "Ashim Khadka", LocalDate.now(), "ashim@gmail.com");
+        Address address = new Address(addressId, customerId, "KTM", "Nepal");
+        AddressKey addressKey = new AddressKey(addressId, customerId);
+
+        clientInstance.getMap(MapNames.ADDRESSES_MAP).put(addressKey, address);
+        clientInstance.getMap(MapNames.CUSTOMERS_MAP).put(customerId, customer);
+
+        CustomerOverview customerOverview = customerService.getCustomerOverview(customerId);
+        assertNotNull(customerOverview);
+        assertEquals("Ashim Khadka", customerOverview.getCustomerName());
+        assertEquals(1, customerOverview.getAddresses().size());
+        assertEquals("KTM", customerOverview.getAddresses().get(0).getCity());
     }
 
     private List<Customer> generateCustomers(int maxCustomers) {
