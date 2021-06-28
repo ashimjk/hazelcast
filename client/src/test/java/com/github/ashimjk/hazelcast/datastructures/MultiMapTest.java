@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 
+import static com.github.ashimjk.hazelcast.shared.StoreNames.ACCOUNT_TO_CUSTOMERS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(properties = {"spring.main.allow-bean-definition-overriding=true"},
@@ -25,7 +26,7 @@ public class MultiMapTest {
         Customer customer2 = new Customer(2L, "Kushal Sherchan", LocalDate.now(), "kushal@gmail.com");
         Customer customer3 = new Customer(3L, "Shekhar Rai", LocalDate.now(), "shekar@gmail.com");
 
-        MultiMap<String, Customer> accountToCustomersMap = clientInstance.getMultiMap("account-to-customers");
+        MultiMap<String, Customer> accountToCustomersMap = clientInstance.getMultiMap(ACCOUNT_TO_CUSTOMERS);
         accountToCustomersMap.put("1", customer1);
         accountToCustomersMap.put("2", customer2);
         accountToCustomersMap.put("2", customer3);

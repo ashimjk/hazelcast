@@ -2,7 +2,7 @@ package com.github.ashimjk.hazelcast.listener;
 
 import com.github.ashimjk.hazelcast.domain.Customer;
 import com.github.ashimjk.hazelcast.domain.Email;
-import com.github.ashimjk.hazelcast.service.MapNames;
+import com.github.ashimjk.hazelcast.shared.StoreNames;
 import com.hazelcast.collection.IQueue;
 import com.hazelcast.core.EntryEvent;
 import com.hazelcast.core.HazelcastInstance;
@@ -10,26 +10,30 @@ import com.hazelcast.map.IMap;
 import com.hazelcast.map.listener.EntryAddedListener;
 import com.hazelcast.map.listener.EntryRemovedListener;
 import com.hazelcast.map.listener.EntryUpdatedListener;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.UUID;
 
-@Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CustomerEntryListener implements
         EntryAddedListener<Long, Customer>,
         EntryUpdatedListener<Long, Customer>,
         EntryRemovedListener<Long, Customer>,
-        MapNames {
+        StoreNames {
 
-    private final HazelcastInstance clientInstance;
+    private final HazelcastInstance hazelcastInstance;
 
     @PostConstruct
     public void init() {
-        IMap<Long, Customer> customerById = clientInstance.getMap(CUSTOMERS_MAP);
-        customerById.addEntryListener(this, true);
+        IMap<Long, Customer> customerById = hazelcastInstance.getMap(StoreNames.CUSTOMERS_MAP);
+        customerById.addLocalEntryListener(this);
+    }
+
+    public static void registerItSelf(HazelcastInstance hazelcastInstance) {
+        CustomerEntryListener entryListener = new CustomerEntryListener(hazelcastInstance);
+        entryListener.init();
     }
 
     @Override
@@ -43,7 +47,7 @@ public class CustomerEntryListener implements
 
             Email email = new Email(generatedUuid, emailAddress, subject, body);
 
-            IQueue<Email> emailQueue = clientInstance.getQueue("email-queue");
+            IQueue<Email> emailQueue = hazelcastInstance.getQueue(StoreNames.EMAIL_QUEUE);
             emailQueue.add(email);
         }
     }
@@ -59,7 +63,7 @@ public class CustomerEntryListener implements
             String body = "Hi " + customer.getName() + ", We're just letting you know that we have updated your details.";
             Email email = new Email(generatedUuid, emailAddress, subject, body);
 
-            IQueue<Email> emailQueue = clientInstance.getQueue("email-queue");
+            IQueue<Email> emailQueue = hazelcastInstance.getQueue(StoreNames.EMAIL_QUEUE);
             emailQueue.add(email);
         }
 
@@ -76,7 +80,7 @@ public class CustomerEntryListener implements
             String body = "Hi " + customer.getName() + ", We're sorry to see you leave us.";
             Email email = new Email(generatedUuid, emailAddress, subject, body);
 
-            IQueue<Email> emailQueue = clientInstance.getQueue("email-queue");
+            IQueue<Email> emailQueue = hazelcastInstance.getQueue(StoreNames.EMAIL_QUEUE);
             emailQueue.add(email);
         }
 

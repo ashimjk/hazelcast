@@ -4,6 +4,7 @@ import com.github.ashimjk.hazelcast.domain.Customer;
 import com.github.ashimjk.hazelcast.model.Address;
 import com.github.ashimjk.hazelcast.model.AddressKey;
 import com.github.ashimjk.hazelcast.model.CustomerOverview;
+import com.github.ashimjk.hazelcast.shared.StoreNames;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.HazelcastInstanceAware;
 import com.hazelcast.map.EntryProcessor;
@@ -19,7 +20,7 @@ import java.util.Set;
 public class GetCustomerOverviewEntryProcessor implements Serializable,
         EntryProcessor<Long, Customer, CustomerOverview>,
         HazelcastInstanceAware,
-        MapNames {
+        StoreNames {
 
     private static final long serialVersionUID = -6274401033477934925L;
 

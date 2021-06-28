@@ -2,6 +2,7 @@ package com.github.ashimjk.hazelcast.config;
 
 import com.github.ashimjk.hazelcast.service.CustomerMapStore;
 import com.github.ashimjk.hazelcast.service.EmailQueueStore;
+import com.github.ashimjk.hazelcast.shared.StoreNames;
 import com.hazelcast.config.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,13 +16,13 @@ public class StorageConfig {
         config.setInstanceName("storage-node");
 
         // Account Customer Multi Map
-        MultiMapConfig multiMapConfig = new MultiMapConfig("account-to-customers");
+        MultiMapConfig multiMapConfig = new MultiMapConfig(StoreNames.ACCOUNT_TO_CUSTOMERS);
         multiMapConfig.setValueCollectionType(MultiMapConfig.ValueCollectionType.LIST);
         config.addMultiMapConfig(multiMapConfig);
 
         // Email Queue Configuration
         QueueConfig emailQueueConfig = new QueueConfig();
-        emailQueueConfig.setName("email-queue");
+        emailQueueConfig.setName(StoreNames.EMAIL_QUEUE);
         QueueStoreConfig emailQueueStoreConfig = new QueueStoreConfig();
         emailQueueStoreConfig.setStoreImplementation(emailQueueStore);
 
@@ -40,7 +41,7 @@ public class StorageConfig {
         // Update the customers map configuration to use the
         // customers map store config we just created
         customerMapConfig.setMapStoreConfig(customerMapStoreConfig);
-        customerMapConfig.setName("customers");
+        customerMapConfig.setName(StoreNames.CUSTOMERS_MAP);
 
         IndexConfig dobIndexConfig = new IndexConfig(IndexConfig.DEFAULT_TYPE, "dob");
         customerMapConfig.addIndexConfig(dobIndexConfig);

@@ -6,6 +6,7 @@ import com.github.ashimjk.hazelcast.domain.Customer;
 import com.github.ashimjk.hazelcast.model.Address;
 import com.github.ashimjk.hazelcast.model.AddressKey;
 import com.github.ashimjk.hazelcast.model.CustomerOverview;
+import com.github.ashimjk.hazelcast.shared.StoreNames;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import org.junit.jupiter.api.BeforeEach;
@@ -148,8 +149,8 @@ class CustomerServiceTest {
         Address address = new Address(addressId, customerId, "KTM", "Nepal");
         AddressKey addressKey = new AddressKey(addressId, customerId);
 
-        clientInstance.getMap(MapNames.ADDRESSES_MAP).put(addressKey, address);
-        clientInstance.getMap(MapNames.CUSTOMERS_MAP).put(customerId, customer);
+        clientInstance.getMap(StoreNames.ADDRESSES_MAP).put(addressKey, address);
+        clientInstance.getMap(StoreNames.CUSTOMERS_MAP).put(customerId, customer);
 
         CustomerOverview customerOverview = customerService.getCustomerOverview(customerId);
         assertNotNull(customerOverview);

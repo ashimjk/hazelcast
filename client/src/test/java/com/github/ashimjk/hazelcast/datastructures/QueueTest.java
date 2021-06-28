@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.github.ashimjk.hazelcast.shared.StoreNames.EMAIL_QUEUE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(properties = {"spring.main.allow-bean-definition-overriding=true"},
@@ -36,7 +37,7 @@ public class QueueTest {
 
         storageNodeFactory.ensureClusterSize(2);
 
-        emailQueue = clientInstance.getQueue("email-queue");
+        emailQueue = clientInstance.getQueue(EMAIL_QUEUE);
 
         Email email1 = new Email(UUID.randomUUID().toString(), "address1", "subject1", "body1");
         Email email2 = new Email(UUID.randomUUID().toString(), "address2", "subject2", "body2");

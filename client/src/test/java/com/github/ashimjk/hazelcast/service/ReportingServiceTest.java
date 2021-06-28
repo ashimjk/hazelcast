@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.ashimjk.hazelcast.service.MapNames.TRANSACTIONS_MAP;
+import static com.github.ashimjk.hazelcast.shared.StoreNames.TRANSACTIONS_MAP;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(properties = {"spring.main.allow-bean-definition-overriding=true"},

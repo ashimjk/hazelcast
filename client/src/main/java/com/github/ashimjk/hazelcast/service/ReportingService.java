@@ -2,6 +2,7 @@ package com.github.ashimjk.hazelcast.service;
 
 import com.github.ashimjk.hazelcast.model.Transaction;
 import com.github.ashimjk.hazelcast.model.TransactionAmountAggregator;
+import com.github.ashimjk.hazelcast.shared.StoreNames;
 import com.hazelcast.aggregation.Aggregators;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class ReportingService implements MapNames {
+public class ReportingService implements StoreNames {
 
     private IMap<Long, Transaction> transactionById;
     private final HazelcastInstance clientInstance;

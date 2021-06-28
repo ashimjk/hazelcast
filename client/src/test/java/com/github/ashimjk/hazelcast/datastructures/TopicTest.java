@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.ashimjk.hazelcast.shared.StoreNames.NEW_CUSTOMER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(properties = {"spring.main.allow-bean-definition-overriding=true"},
@@ -30,7 +31,7 @@ public class TopicTest {
 
         storageNodeFactory.ensureClusterSize(1);
 
-        ITopic<Customer> newCustomerTopic = clientInstance.getTopic("new-customer-topic");
+        ITopic<Customer> newCustomerTopic = clientInstance.getTopic(NEW_CUSTOMER_TOPIC);
 
         UUID messageListenerRef = newCustomerTopic.addMessageListener(message -> {
             // add business logic for message listener

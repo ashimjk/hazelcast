@@ -2,6 +2,7 @@ package com.github.ashimjk.hazelcast.service;
 
 import com.github.ashimjk.hazelcast.domain.Customer;
 import com.github.ashimjk.hazelcast.model.CustomerOverview;
+import com.github.ashimjk.hazelcast.shared.StoreNames;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.EntryProcessor;
 import com.hazelcast.map.IMap;
@@ -21,7 +22,7 @@ import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
-public class CustomerService implements MapNames {
+public class CustomerService implements StoreNames {
 
     private IMap<Long, Customer> customerById;
     private final HazelcastInstance clientInstance;

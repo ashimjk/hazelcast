@@ -4,6 +4,7 @@ import com.github.ashimjk.hazelcast.ClientApplication;
 import com.github.ashimjk.hazelcast.config.ClientTestConfiguration;
 import com.github.ashimjk.hazelcast.domain.Customer;
 import com.github.ashimjk.hazelcast.domain.Email;
+import com.github.ashimjk.hazelcast.shared.StoreNames;
 import com.hazelcast.collection.IQueue;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
@@ -25,18 +26,18 @@ public class CustomerEntryListenerTest {
 
     @AfterEach
     public void tearDown() throws Exception {
-        clientInstance.getMap("customers").clear();
+        clientInstance.getMap(StoreNames.CUSTOMERS_MAP).clear();
         Thread.sleep(300L);
-        clientInstance.getQueue("email-queue").clear();
+        clientInstance.getQueue(StoreNames.EMAIL_QUEUE).clear();
     }
 
     @Test
     public void testEntryAdded() throws Exception {
-        IMap<Long, Customer> customersMap = clientInstance.getMap("customers");
+        IMap<Long, Customer> customersMap = clientInstance.getMap(StoreNames.CUSTOMERS_MAP);
         Customer customer = new Customer(1L, "Ashim Khadka", LocalDate.now(), "ashim@gmail.com");
         customersMap.put(1L, customer);
 
-        IQueue<Email> emailQueue = clientInstance.getQueue("email-queue");
+        IQueue<Email> emailQueue = clientInstance.getQueue(StoreNames.EMAIL_QUEUE);
         Email email = emailQueue.take();
         assertNotNull(email);
         assertEquals("ashim@gmail.com", email.getToAddress());
@@ -47,11 +48,11 @@ public class CustomerEntryListenerTest {
 
     @Test
     public void testEntryUpdated() throws Exception {
-        IMap<Long, Customer> customersMap = clientInstance.getMap("customers");
+        IMap<Long, Customer> customersMap = clientInstance.getMap(StoreNames.CUSTOMERS_MAP);
         Customer customer = new Customer(1L, "Ashim Khadka", LocalDate.now(), "wrong@gmail.com");
         customersMap.put(1L, customer);
 
-        IQueue<Email> emailQueue = clientInstance.getQueue("email-queue");
+        IQueue<Email> emailQueue = clientInstance.getQueue(StoreNames.EMAIL_QUEUE);
         //Take the customer added email off the queue
         emailQueue.take();
 
@@ -69,11 +70,11 @@ public class CustomerEntryListenerTest {
 
     @Test
     public void testEntryRemoved() throws Exception {
-        IMap<Long, Customer> customersMap = clientInstance.getMap("customers");
+        IMap<Long, Customer> customersMap = clientInstance.getMap(StoreNames.CUSTOMERS_MAP);
         Customer customer = new Customer(1L, "Ashim Khadka", LocalDate.now(), "ashim@gmail.com");
         customersMap.put(1L, customer);
 
-        IQueue<Email> emailQueue = clientInstance.getQueue("email-queue");
+        IQueue<Email> emailQueue = clientInstance.getQueue(StoreNames.EMAIL_QUEUE);
         //Take the customer added email off the queue
         emailQueue.take();
 
