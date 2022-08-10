@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+
+  postgres:
+    container_name: hz_postgres
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_DB: hazelcast
+      POSTGRES_USER: hazelcast
+      POSTGRES_PASSWORD: hazelcast
+    command: postgres -c max_connections=300 -c log_min_messages=LOG
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  hazelcast-management-center:
+    container_name: hz_management
+    image: hazelcast/management-center:latest
+    ports:
+      - 7080:8080
+    environment:
+      - 'MC_INIT_CMD=./bin/mc-conf.sh dev-mode configure && ./bin/mc-conf.sh cluster add -H=/data -ma 172.17.0.1:5701 -cn dev'
